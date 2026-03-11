@@ -1,4 +1,11 @@
+import sys
 from pathlib import Path
+
+# Ensure the repo root is on sys.path so md_docx_converter is importable
+# regardless of the working directory when launched via desktop shortcut.
+_repo_root = Path(__file__).resolve().parent.parent
+if str(_repo_root) not in sys.path:
+    sys.path.insert(0, str(_repo_root))
 
 TEMPLATE_PATH = Path(r"C:\Users\Chris\AppData\Roaming\Microsoft\Templates\Normal.dotm")
 
@@ -18,7 +25,7 @@ def run():
     print("--------------------")
 
     while True:
-        raw = input("Enter file path: ").strip().strip('"').strip("'")
+        raw = input("Enter file path: ").strip().strip('"').strip("'").strip()
         if not raw:
             continue
         input_path = Path(raw)
