@@ -10,6 +10,6 @@ converter = Path(__file__).parent / "converter.py"
 python = Path(r"C:\Users\Chris\AppData\Local\Programs\Python\Python311\python.exe")
 
 subprocess.run(
-    ["cmd", "/k", f'"{python}" "{converter}"'],
+    ["cmd", "/k", str(python), str(converter)],
     creationflags=subprocess.CREATE_NEW_CONSOLE,
 )
