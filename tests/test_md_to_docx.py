@@ -81,3 +81,23 @@ def test_image_embedded():
         doc = Document(str(out_path))
         body_xml = doc.element.body.xml
         assert "graphicData" in body_xml or "drawing" in body_xml
+
+
+def test_task_list_unchecked():
+    doc = _convert(FIXTURES / "tasks.md")
+    texts = [p.text for p in doc.paragraphs if p.text.strip()]
+    assert any("☐" in t for t in texts)
+
+
+def test_task_list_checked():
+    doc = _convert(FIXTURES / "tasks.md")
+    texts = [p.text for p in doc.paragraphs if p.text.strip()]
+    assert any("☑" in t for t in texts)
+
+
+def test_plain_bullet_has_no_checkbox():
+    doc = _convert(FIXTURES / "tasks.md")
+    texts = [p.text for p in doc.paragraphs if p.text.strip()]
+    plain = [t for t in texts if "Plain bullet" in t]
+    assert len(plain) == 1
+    assert "☐" not in plain[0] and "☑" not in plain[0]
