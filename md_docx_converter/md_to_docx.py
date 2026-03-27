@@ -60,7 +60,7 @@ def _open_template(template_path: Path) -> Document:
 
 
 def convert_md_to_docx(md_path: Path, out_path: Path, template_path: Path) -> Path:
-    md_text = md_path.read_text(encoding="utf-8")
+    md_text = md_path.read_text(encoding="utf-8", errors="replace")
     offset = md_heading_offset(md_text)
     md_dir = md_path.parent
 
@@ -139,7 +139,7 @@ def _write_tokens(doc, tokens, offset, md_dir):
             i += 1  # silently drop HTML
 
         elif tok.type == "table_open":
-            i = _write_table(doc, tokens, i)
+            i = _write_table(doc, tokens, i, md_dir)
 
         else:
             i += 1
@@ -164,6 +164,7 @@ def _apply_inline(para, children, md_dir: Path):
     while i < len(children):
         child = children[i]
 
+
         if child.type == "strong_open":
             bold = True
         elif child.type == "strong_close":
@@ -181,9 +182,7 @@ def _apply_inline(para, children, md_dir: Path):
         elif child.type == "link_close":
             link_href = None
         elif child.type == "code_inline":
-            run = para.add_run(child.content)
-            run.font.name = "Courier New"
-            run.font.size = Pt(10)
+            run = para.add_run(f"'{child.content}'")
         elif child.type == "image":
             src = child.attrs.get("src", "")
             resolved = resolve_image_path(src, md_dir)
@@ -313,8 +312,8 @@ def _write_hr(doc):
     pPr.append(pBdr)
 
 
-def _write_table(doc, tokens, i):
-    rows = []
+def _write_table(doc, tokens, i, md_dir):
+    rows = []  # list of rows; each row is a list of inline-children lists
     i += 1  # skip table_open
     while i < len(tokens) and tokens[i].type != "table_close":
         tok = tokens[i]
@@ -326,10 +325,7 @@ def _write_table(doc, tokens, i):
             while i < len(tokens) and tokens[i].type != "tr_close":
                 if tokens[i].type in ("th_open", "td_open"):
                     inline = tokens[i + 1]
-                    text = "".join(
-                        c.content for c in (inline.children or []) if c.type == "text"
-                    )
-                    row_cells.append(text)
+                    row_cells.append(inline.children or [])
                     i += 3  # th/td open, inline, th/td close
                 else:
                     i += 1
@@ -343,7 +339,7 @@ def _write_table(doc, tokens, i):
         return i
 
     num_cols = max(len(r) for r in rows)
-    rows = [r + [""] * (num_cols - len(r)) for r in rows]
+    rows = [r + [[]] * (num_cols - len(r)) for r in rows]
 
     table = doc.add_table(rows=len(rows), cols=num_cols)
     try:
@@ -351,7 +347,9 @@ def _write_table(doc, tokens, i):
     except KeyError:
         pass
     for r_idx, row in enumerate(rows):
-        for c_idx, cell_text in enumerate(row):
-            table.cell(r_idx, c_idx).text = cell_text
+        for c_idx, children in enumerate(row):
+            cell = table.cell(r_idx, c_idx)
+            para = cell.paragraphs[0]
+            _apply_inline(para, children, md_dir)
 
     return i
