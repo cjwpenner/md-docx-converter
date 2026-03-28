@@ -119,6 +119,8 @@ Add to `%APPDATA%\Claude\claude_desktop_config.json`:
 claude mcp add md-docx -- python -m mcp_md_docx
 ```
 
+> **Note:** `python` must be the same Python that you ran `pip install` with. If you use virtual environments or multiple Python versions, use the full path instead — e.g. `C:\Users\YourName\AppData\Local\Programs\Python\Python311\python.exe` on Windows or `/usr/local/bin/python3` on Mac/Linux.
+
 ### Tools exposed
 
 | Tool | What it does |
