@@ -88,6 +88,51 @@ Word formatting that has no Markdown equivalent is approximated as **bold**:
 - **DOCX → MD**: Embedded images are extracted to a `{filename}_images/` folder next to the output `.md` file.
 - **MD → DOCX**: Images referenced by relative path are re-embedded. Missing images become `[image not found: path]`.
 
+## MCP server (Claude / AI integration)
+
+This tool is also available as an **MCP server**, letting Claude and other AI assistants read and write Word documents directly.
+
+### Install
+
+```bash
+pip install mcp-md-docx
+```
+
+### Configure Claude Desktop
+
+Add to `%APPDATA%\Claude\claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "md-docx": {
+      "command": "python",
+      "args": ["-m", "mcp_md_docx"]
+    }
+  }
+}
+```
+
+### Configure Claude Code
+
+```bash
+claude mcp add md-docx -- python -m mcp_md_docx
+```
+
+### Tools exposed
+
+| Tool | What it does |
+|---|---|
+| `read_docx` | Read a `.docx` file — returns full Markdown text to the AI |
+| `write_docx` | Create a `.docx` from Markdown text the AI has written |
+| `convert_md_file_to_docx` | Convert a `.md` file on disk to `.docx` |
+| `convert_docx_file_to_md` | Convert a `.docx` file on disk to `.md` |
+
+Once configured, you can say things like:
+- *"Read `report.docx` and summarise it"*
+- *"Turn this into a Word document and save it to my Desktop"*
+- *"Convert all the bullet points in `notes.docx` into a table"*
+
 ## Project structure
 
 ```
@@ -98,7 +143,11 @@ md_docx_converter/
 ├── heading_mapper.py  # Heading hierarchy pre-scan logic
 ├── image_handler.py   # Image extraction and embedding
 └── launch.pyw         # Desktop shortcut launcher
+mcp_md_docx/
+├── server.py          # MCP server (four tools)
+└── __main__.py        # Entry point for python -m mcp_md_docx
 create_shortcut.py     # One-time shortcut setup script
+pyproject.toml         # PyPI packaging config
 ```
 
 ## License

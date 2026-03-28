@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mcp-md-docx"
+version = "0.1.0"
+description = "MCP server for bidirectional Markdown ↔ Word (.docx) conversion"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=1.0.0",
+    "markdown-it-py>=3.0.0",
+    "python-docx>=1.1.0",
+]
+
+[project.scripts]
+mcp-md-docx = "mcp_md_docx.server:run"
+
+[project.urls]
+Homepage = "https://github.com/cjwpenner/md-docx-converter"
+Repository = "https://github.com/cjwpenner/md-docx-converter"
+
+[tool.hatch.build.targets.wheel]
+packages = ["md_docx_converter", "mcp_md_docx"]
