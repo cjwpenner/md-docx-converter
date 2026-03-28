@@ -1,18 +1,13 @@
 from pathlib import Path
-import pytest
 from docx import Document
 from md_docx_converter.md_to_docx import convert_md_to_docx
 
 FIXTURES = Path(__file__).parent / "fixtures"
-TEMPLATE = Path(r"C:\Users\Chris\AppData\Roaming\Microsoft\Templates\Normal.dotm")
-
-if not TEMPLATE.exists():
-    pytest.skip("Word Normal template not found — skipping DOCX tests", allow_module_level=True)
 
 
 def _convert(md_file):
     out = FIXTURES / (md_file.stem + "_out.docx")
-    convert_md_to_docx(md_file, out, TEMPLATE)
+    convert_md_to_docx(md_file, out)
     return Document(str(out))
 
 
@@ -77,7 +72,7 @@ def test_image_embedded():
         md_path = tmp / "test_img.md"
         md_path.write_text(md_content, encoding="utf-8")
         out_path = tmp / "test_img.docx"
-        convert_md_to_docx(md_path, out_path, TEMPLATE)
+        convert_md_to_docx(md_path, out_path)
         doc = Document(str(out_path))
         body_xml = doc.element.body.xml
         assert "graphicData" in body_xml or "drawing" in body_xml

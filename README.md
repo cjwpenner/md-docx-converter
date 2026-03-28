@@ -4,7 +4,7 @@ A Python tool for bidirectional conversion between **Markdown** (`.md`) and **Mi
 
 ## What it does
 
-- Converts `.md` → `.docx` using your Word Normal template for consistent styling
+- Converts `.md` → `.docx` with correct heading hierarchy (Title, Heading 1–9)
 - Converts `.docx` → `.md` as clean GitHub Flavored Markdown (GFM)
 - Runs from a simple desktop shortcut — no command line knowledge needed
 - Handles headings, bold/italic/strikethrough, lists, task lists, tables, blockquotes, code blocks, images, and hyperlinks
@@ -15,7 +15,6 @@ See [MarkdownSyntax.md](MarkdownSyntax.md) for the full element mapping and note
 
 - Windows 10/11
 - Python 3.11+
-- Microsoft Word (for the Normal template)
 - The following Python packages (installed via pip):
 
 ```
@@ -63,16 +62,6 @@ You can also run directly from the command line:
 ```bash
 python md_docx_converter/converter.py
 ```
-
-## Word template
-
-When converting MD → DOCX, the tool uses your Word **Normal** template to apply consistent fonts and spacing. It expects the template at:
-
-```
-C:\Users\<YourName>\AppData\Roaming\Microsoft\Templates\Normal.dotm
-```
-
-If your template is in a different location, update `TEMPLATE_PATH` in `md_docx_converter/converter.py`.
 
 ## Conversion notes
 

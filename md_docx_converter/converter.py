@@ -7,8 +7,6 @@ _repo_root = Path(__file__).resolve().parent.parent
 if str(_repo_root) not in sys.path:
     sys.path.insert(0, str(_repo_root))
 
-TEMPLATE_PATH = Path(r"C:\Users\Chris\AppData\Roaming\Microsoft\Templates\Normal.dotm")
-
 
 def validate_extension(path: Path) -> bool:
     return path.suffix.lower() in (".md", ".docx")
@@ -49,13 +47,8 @@ def run():
 
         try:
             if input_path.suffix.lower() == ".md":
-                if not TEMPLATE_PATH.exists():
-                    raise FileNotFoundError(
-                        f"Word template not found at:\n  {TEMPLATE_PATH}\n"
-                        "Please check the path in converter.py"
-                    )
                 from md_docx_converter.md_to_docx import convert_md_to_docx
-                convert_md_to_docx(input_path, out_path, TEMPLATE_PATH)
+                convert_md_to_docx(input_path, out_path)
             else:
                 from md_docx_converter.docx_to_md import convert_docx_to_md
                 convert_docx_to_md(input_path, out_path)

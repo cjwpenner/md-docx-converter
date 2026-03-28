@@ -4,68 +4,17 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 from docx.shared import Pt
 import markdown_it
-import shutil
-import tempfile
-import zipfile
 from md_docx_converter.heading_mapper import md_heading_offset
 from md_docx_converter.image_handler import resolve_image_path, embed_image
 
-_DOTM_CT = "application/vnd.ms-word.template.macroEnabledTemplate.main+xml"
-_DOCX_CT = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"
 
-
-def _open_template(template_path: Path) -> Document:
-    """
-    Open a Word template as a python-docx Document with all standard styles available.
-
-    Normal.dotm only defines the 'Normal' style in its XML — all other built-in
-    styles (Title, Heading 1, etc.) are inherited from Word's built-in style dictionary
-    but are absent from the file. python-docx can't apply styles it hasn't seen.
-
-    Strategy: open python-docx's built-in default document (which has all standard
-    styles), then copy the Normal paragraph formatting from the .dotm so the user's
-    font/spacing preferences are applied to the Normal style.
-    """
-    doc = Document()  # opens built-in default template — has all standard styles
-
-    # Try to extract Normal style properties from the .dotm and apply them
-    suffix = template_path.suffix.lower()
-    if suffix in (".dotm", ".dotx", ".docx"):
-        try:
-            tmp = tempfile.NamedTemporaryFile(suffix=".docx", delete=False)
-            tmp.close()
-            tmp_path = Path(tmp.name)
-            shutil.copy2(template_path, tmp_path)
-            with zipfile.ZipFile(str(tmp_path), "r") as zin:
-                files = {n: zin.read(n) for n in zin.namelist()}
-            ct_xml = files["[Content_Types].xml"].decode("utf-8")
-            ct_xml = ct_xml.replace(_DOTM_CT, _DOCX_CT)
-            files["[Content_Types].xml"] = ct_xml.encode("utf-8")
-            with zipfile.ZipFile(str(tmp_path), "w", zipfile.ZIP_DEFLATED) as zout:
-                for name, data in files.items():
-                    zout.writestr(name, data)
-            tmpl_doc = Document(str(tmp_path))
-            tmp_path.unlink()
-            # Copy Normal style's font from template to our document
-            tmpl_normal = tmpl_doc.styles["Normal"]
-            our_normal = doc.styles["Normal"]
-            if tmpl_normal.font.name:
-                our_normal.font.name = tmpl_normal.font.name
-            if tmpl_normal.font.size:
-                our_normal.font.size = tmpl_normal.font.size
-        except Exception:
-            pass  # If anything fails, just use the built-in default as-is
-
-    return doc
-
-
-def convert_md_to_docx(md_path: Path, out_path: Path, template_path: Path) -> Path:
+def convert_md_to_docx(md_path: Path, out_path: Path) -> Path:
     md_text = md_path.read_text(encoding="utf-8", errors="replace")
     offset = md_heading_offset(md_text)
     md_dir = md_path.parent
 
-    doc = _open_template(template_path)
-    # Remove all existing body content from template (keep sectPr for page layout)
+    doc = Document()
+    # Remove the default empty paragraph python-docx adds
     for element in list(doc.element.body):
         tag = element.tag.split('}')[-1] if '}' in element.tag else element.tag
         if tag in ('p', 'tbl'):
