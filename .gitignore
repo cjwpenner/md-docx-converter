@@ -1,0 +1,16 @@
+# Secrets
+.env
+
+# Build / distribution
+dist/
+build/
+*.egg-info/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
