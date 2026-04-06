@@ -88,35 +88,56 @@ Word formatting that has no Markdown equivalent is approximated as **bold**:
 - **DOCX → MD**: Embedded images are extracted to a `{filename}_images/` folder next to the output `.md` file.
 - **MD → DOCX**: Images referenced by relative path are re-embedded. Missing images become `[image not found: path]`.
 
-## MCP server (Claude / AI integration)
+## Claude Code integration
 
-This tool is also available as an **MCP server**, letting Claude and other AI assistants read and write Word documents directly.
+This tool integrates with Claude Code as either a **plugin** (recommended — gets everything in two commands) or a standalone **MCP server** (for manual setup or Claude Desktop).
 
-### Install
+### Option A: Claude Code plugin (recommended)
+
+The plugin bundles the MCP server configuration and a `/convert` skill. Run these two commands inside Claude Code:
+
+```
+/plugin marketplace add cjwpenner/md-docx-converter
+/plugin install md-docx-converter@md-docx-converter
+```
+
+That is it — no further configuration needed. After running `/reload-plugins`, Claude gains the conversion tools and you can invoke the skill directly:
+
+```
+/md-docx-converter:convert path/to/file.md
+/md-docx-converter:convert path/to/report.docx
+```
+
+Or just ask naturally: *"Convert this to a Word document"* and Claude will use the tools automatically.
+
+### Option B: MCP server only (manual setup)
+
+Use this if you want just the MCP tools without the plugin, or if you are configuring **Claude Desktop** rather than Claude Code.
+
+**Install the package:**
 
 ```bash
 pip install mcp-md-docx
 ```
 
-### Configure Claude Desktop
+**Claude Code** — register the MCP server:
 
-Add to `%APPDATA%\Claude\claude_desktop_config.json`:
+```bash
+claude mcp add md-docx-converter --transport stdio -- uvx mcp-md-docx
+```
+
+**Claude Desktop** — add to `%APPDATA%\Claude\claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
-    "md-docx": {
-      "command": "python",
-      "args": ["-m", "mcp_md_docx"]
+    "md-docx-converter": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-md-docx"]
     }
   }
 }
-```
-
-### Configure Claude Code
-
-```bash
-claude mcp add md-docx mcp-md-docx
 ```
 
 ### Tools exposed
