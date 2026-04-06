@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "md-docx-converter": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-md-docx"]
+    }
+  }
+}
