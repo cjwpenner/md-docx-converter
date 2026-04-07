@@ -176,3 +176,15 @@ pyproject.toml         # PyPI packaging config
 This project is licensed under the **GNU General Public License v3.0** (GPLv3). You are free to use, modify, and distribute this software, provided that any derivative works are also distributed under the same licence.
 
 See [LICENSE](LICENSE) for the full licence text.
+
+## Third-party libraries
+
+This project depends on the following open source libraries, all MIT-licensed:
+
+| Library | Purpose | Licence |
+|---|---|---|
+| [`mcp`](https://github.com/modelcontextprotocol/python-sdk) | Model Context Protocol server framework | MIT |
+| [`markdown-it-py`](https://github.com/executablebooks/markdown-it-py) | GitHub Flavored Markdown parser | MIT |
+| [`python-docx`](https://github.com/python-openxml/python-docx) | Read and write Word `.docx` files | MIT |
+
+Full licence texts are reproduced in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
