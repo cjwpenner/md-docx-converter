@@ -1,0 +1,11 @@
+{
+  "name": "md-docx-converter",
+  "description": "Convert between Markdown (.md) and Word (.docx) files directly inside Claude Code. Includes an MCP server for reading and writing Word documents.",
+  "version": "0.1.2",
+  "author": {
+    "name": "cjwpenner"
+  },
+  "homepage": "https://github.com/cjwpenner/md-docx-converter",
+  "repository": "https://github.com/cjwpenner/md-docx-converter",
+  "license": "GPL-3.0"
+}
